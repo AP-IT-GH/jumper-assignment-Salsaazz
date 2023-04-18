@@ -8,10 +8,11 @@ public class ObjectMovement : MonoBehaviour
     public Vector3 Spawn { get; private set; }
     GameObject _wall;
     GameObject _player;
-    private const float _minSpeed = 3;
+    private const float _minSpeed = 5;
     private const float _maxSpeed = 10;
     private float _speed = _minSpeed;
     public bool Hit { get; set; }
+    public bool Respawn { get; private set; }
     void Start()
     {
         Spawn = gameObject.transform.localPosition;
@@ -32,7 +33,9 @@ public class ObjectMovement : MonoBehaviour
         {
             gameObject.transform.localPosition = Spawn;
             _speed = Random.Range(_minSpeed, _maxSpeed);
+            Respawn = true;
         }
+        else Respawn = false;
         if (collision.gameObject == _player)
         {
             Hit = true;
