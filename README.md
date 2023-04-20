@@ -23,4 +23,5 @@ Laat de AI voor een uur of langer trainen voor het beste resultaat.
 Hieronder vindt u een voorbeeld van het resultaat:
 
 ![Screenshot 2023-04-20 182850](https://user-images.githubusercontent.com/38139170/233453402-bd44939d-def4-4fb1-84c9-10377c58427b.png)
+
 Hoe meer beloningen de agent verdient hoe langer de episode duurt.
