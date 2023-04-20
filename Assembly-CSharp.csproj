@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\ObjectMovement.cs" />
     <Compile Include="Assets\Scripts\JumperAgent.cs" />
+    <Compile Include="Assets\Scripts\Bonus.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

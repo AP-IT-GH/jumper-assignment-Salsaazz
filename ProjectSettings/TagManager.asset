@@ -7,6 +7,7 @@ TagManager:
   - Wall
   - Floor
   - Object
+  - Bonus
   layers:
   - Default
   - TransparentFX

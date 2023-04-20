@@ -12,7 +12,6 @@ public class ObjectMovement : MonoBehaviour
     private const float _maxSpeed = 10;
     private float _speed = _minSpeed;
     public bool Hit { get; set; }
-    public bool Respawn { get; private set; }
     void Start()
     {
         Spawn = gameObject.transform.localPosition;
@@ -33,13 +32,14 @@ public class ObjectMovement : MonoBehaviour
         {
             gameObject.transform.localPosition = Spawn;
             _speed = Random.Range(_minSpeed, _maxSpeed);
-            Respawn = true;
+            _player.GetComponent<JumperAgent>().GiveReward(0.5f);
+            return;
         }
-        else Respawn = false;
         if (collision.gameObject == _player)
         {
             Hit = true;
             gameObject.transform.localPosition = Spawn;
+            _player.GetComponent<JumperAgent>().SetHit();
         }
     }
 }

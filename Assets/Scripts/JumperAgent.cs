@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
@@ -7,8 +9,6 @@ using UnityEngine;
 
 public class JumperAgent : Agent
 {
-    GameObject _object;
-    ObjectMovement _objectScript;
     public bool _isOnGround;
     private float jumpSpeed = 0.3f;
     public LayerMask whatIsGround;
@@ -16,58 +16,54 @@ public class JumperAgent : Agent
     private float _gravity = 0.7f;
     private Rigidbody _body;
     private float yVelocity;
+    private int _count = 0;
+    private float _energy;
+
+    private int _reekscount;
+    private int _average;
+    private int _curretnMax;
+    private int _allTimeMax;
     public override void OnEpisodeBegin()
     {
         _body = GetComponent<Rigidbody>();
-
+        _energy = 5f;
         _body.freezeRotation = true;
         transform.position = new Vector3(0, 0.5f, -3f);
-        _object = GameObject.FindGameObjectWithTag("Object");
-        _objectScript = _object.GetComponent<ObjectMovement>();
-        _object.transform.localPosition = _objectScript.Spawn;
-        _objectScript.Hit = false;
-        _rewardGiven = false;
+        if(_reekscount%20 == 0)
+        {
+            _reekscount = 0;
+            _average /= 20;
+            Debug.Log($"20 passed. Average: {_average}. Max: {_curretnMax}. All Time Max: {_allTimeMax}");
+            _average = 0;
+            _curretnMax = 0;
+        }
+        _reekscount++;
+        _count = 0;
         base.OnEpisodeBegin();
     }
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(_isOnGround);
+        sensor.AddObservation(_energy);
         base.CollectObservations(sensor);
     }
-    private bool _rewardGiven;
     public override void OnActionReceived(ActionBuffers actions)
     {
         _isOnGround = Physics.Raycast(transform.position, Vector3.down, transform.lossyScale.y * 0.5f + 0.2f, whatIsGround);
         if (_isOnGround)
-        {
-            if (actions.DiscreteActions[0] == 1)
+        {            
+            if (actions.DiscreteActions[0] == 1 && _energy >0)
             {
                 yVelocity = jumpSpeed;//set velocity to jump
-                
+                _energy--;
                 transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y + yVelocity, transform.localPosition.z); //ellevate
+                AddReward(-0.2f);
             }
-            if (_objectScript.Respawn)
-                _rewardGiven = false;
         }
         else
         {
             yVelocity -= _gravity * Time.deltaTime; //reduce velocity
             transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y + yVelocity, transform.localPosition.z); //update position
-            
-            if(_object.transform.localPosition.z <= transform.localPosition.z && !_rewardGiven)
-            {
-                AddReward(0.3f);
-                _rewardGiven = true;
-            }
-        }
-        
-        if (_objectScript.Hit)
-        {
-            if (_rewardGiven)
-            {
-                AddReward(-0.03f);
-            }
-            EndEpisode();
         }
         base.OnActionReceived(actions);
     }
@@ -89,6 +85,42 @@ public class JumperAgent : Agent
         }
         Debug.Log("UITGEVOERD");
     }
-    
 
+    public void GiveReward(float reward)
+    {
+        _count++;
+        AddReward(reward* (float)Math.Ceiling(_count / 2f));        
+    }
+    public void SetHit()
+    {
+        if (_count != 0) { 
+            
+            if(_energy == 0)
+            {
+                Debug.Log($"Died of hunger. Obstacles avoided: {_count}");
+            }
+            else
+            {
+                Debug.Log($"Obstacles avoided: {_count}");
+            }
+        }
+        _average += _count;
+        if(_count> _curretnMax)
+        {
+            _curretnMax = _count;
+            
+        }
+        if (_count > _allTimeMax)
+        {
+            _allTimeMax = _count;
+        }
+        AddReward(-0.2f);
+        if (_energy == 0) AddReward(-0.5f);
+        EndEpisode();
+    }
+    public void GetFood()
+    {
+        AddReward(0.5f);
+        _energy +=2f;
+    }
 }
