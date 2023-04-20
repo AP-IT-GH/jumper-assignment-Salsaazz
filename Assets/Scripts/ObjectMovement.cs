@@ -8,7 +8,7 @@ public class ObjectMovement : MonoBehaviour
     public Vector3 Spawn { get; private set; }
     GameObject _wall;
     GameObject _player;
-    private const float _minSpeed = 3;
+    private const float _minSpeed = 5;
     private const float _maxSpeed = 10;
     private float _speed = _minSpeed;
     public bool Hit { get; set; }
@@ -32,11 +32,14 @@ public class ObjectMovement : MonoBehaviour
         {
             gameObject.transform.localPosition = Spawn;
             _speed = Random.Range(_minSpeed, _maxSpeed);
+            _player.GetComponent<JumperAgent>().GiveReward(0.5f);
+            return;
         }
         if (collision.gameObject == _player)
         {
             Hit = true;
             gameObject.transform.localPosition = Spawn;
+            _player.GetComponent<JumperAgent>().SetHit();
         }
     }
 }
