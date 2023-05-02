@@ -1,5 +1,5 @@
 # Jumper game met ML Agent
-
+## Door Nicolas Vanruysseveldt en Salwa Azzouz
 ## Inleiding
 In dit project experimenteren we met de ML-Agent van Unity om een kubus (de agent) over een balk te laten springen en zoveel mogelijk bonuspunten te verzamelen. Het doel is om dit eerst handmatig te bereiken en vervolgens te automatiseren met behulp van ML-Agent.
 
